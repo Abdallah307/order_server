@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 import requests
+from .models import Order
+import datetime
 
 # Create your views here.
 
@@ -33,8 +35,28 @@ def decrement_number_of_books(book_id):
     requests.put(f'http://localhost:3000/catalog/update/{book_id}')
 
 
+def store_order(book_id):
+    order = Order(book_id=book_id)
+    order.save()
+    return
+
+
 @api_view(['POST'])
 def purchase_book(request, book_id):
+
+    '''
+    purchase_book Function:
+        purchase a book with the specified id
+
+
+        Parameter:
+            book_id : book id
+
+        Return:
+            returns a successfull message alongside with the purchased book info    
+    '''
+
+
     try:
         response = query_book(book_id)
 
@@ -42,9 +64,10 @@ def purchase_book(request, book_id):
             book = response.json()
             if book_available_in_stock(book['number_of_items']):
                 decrement_number_of_books(book_id)
+                store_order(book_id)
                 return Response({
                     "Message": "Book purchased successfully",
-                    "book": response.json(),
+                    "book": book
                 })
 
             return Response({
