@@ -12,7 +12,7 @@ import datetime
 def query_book(book_id):
     try:
         response = requests.get(
-            f'http://localhost:3000/catalog/info/{book_id}')
+            f'https://bazar-store-catalog.herokuapp.com/catalog/info/{book_id}')
         return response
     except:
         raise requests.ConnectionError
@@ -32,7 +32,7 @@ def book_available_in_stock(number_of_items):
 
 
 def decrement_number_of_books(book_id):
-    requests.put(f'http://localhost:3000/catalog/update/{book_id}')
+    requests.put(f'https://bazar-store-catalog.herokuapp.com/catalog/update/{book_id}')
 
 
 def store_order(book_id):
@@ -43,7 +43,6 @@ def store_order(book_id):
 
 @api_view(['POST'])
 def purchase_book(request, book_id):
-
     '''
     purchase_book Function:
         purchase a book with the specified id
@@ -56,14 +55,13 @@ def purchase_book(request, book_id):
             returns a successfull message alongside with the purchased book info    
     '''
 
-
     try:
         response = query_book(book_id)
 
         if book_exists(response.status_code):
             book = response.json()
             if book_available_in_stock(book['number_of_items']):
-                decrement_number_of_books(book_id)
+               # decrement_number_of_books(book_id)
                 store_order(book_id)
                 return Response({
                     "Message": "Book purchased successfully",
