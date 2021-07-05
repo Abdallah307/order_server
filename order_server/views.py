@@ -61,7 +61,7 @@ def purchase_book(request, book_id):
         if book_exists(response.status_code):
             book = response.json()
             if book_available_in_stock(book['number_of_items']):
-               # decrement_number_of_books(book_id)
+                decrement_number_of_books(book_id)
                 store_order(book_id)
                 return Response({
                     "Message": "Book purchased successfully",
